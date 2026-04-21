@@ -33,3 +33,4 @@ C:\Users\User\Desktop\AI SAAS Project\AICRMPro.API\obj\Debug\net8.0\refint\AICRM
 C:\Users\User\Desktop\AI SAAS Project\AICRMPro.API\obj\Debug\net8.0\AICRMPro.API.pdb
 C:\Users\User\Desktop\AI SAAS Project\AICRMPro.API\obj\Debug\net8.0\AICRMPro.API.genruntimeconfig.cache
 C:\Users\User\Desktop\AI SAAS Project\AICRMPro.API\obj\Debug\net8.0\ref\AICRMPro.API.dll
+C:\Users\User\Desktop\AI SAAS Project\AICRMPro.API\obj\Debug\net8.0\AICRMPro.API.sourcelink.json
