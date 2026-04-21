@@ -1,0 +1,11 @@
+C:\Users\User\Desktop\AI SAAS Project\AICRMPro.Domain\bin\Debug\net8.0\AICRMPro.Domain.deps.json
+C:\Users\User\Desktop\AI SAAS Project\AICRMPro.Domain\bin\Debug\net8.0\AICRMPro.Domain.dll
+C:\Users\User\Desktop\AI SAAS Project\AICRMPro.Domain\bin\Debug\net8.0\AICRMPro.Domain.pdb
+C:\Users\User\Desktop\AI SAAS Project\AICRMPro.Domain\obj\Debug\net8.0\AICRMPro.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\User\Desktop\AI SAAS Project\AICRMPro.Domain\obj\Debug\net8.0\AICRMPro.Domain.AssemblyInfoInputs.cache
+C:\Users\User\Desktop\AI SAAS Project\AICRMPro.Domain\obj\Debug\net8.0\AICRMPro.Domain.AssemblyInfo.cs
+C:\Users\User\Desktop\AI SAAS Project\AICRMPro.Domain\obj\Debug\net8.0\AICRMPro.Domain.csproj.CoreCompileInputs.cache
+C:\Users\User\Desktop\AI SAAS Project\AICRMPro.Domain\obj\Debug\net8.0\AICRMPro.Domain.dll
+C:\Users\User\Desktop\AI SAAS Project\AICRMPro.Domain\obj\Debug\net8.0\refint\AICRMPro.Domain.dll
+C:\Users\User\Desktop\AI SAAS Project\AICRMPro.Domain\obj\Debug\net8.0\AICRMPro.Domain.pdb
+C:\Users\User\Desktop\AI SAAS Project\AICRMPro.Domain\obj\Debug\net8.0\ref\AICRMPro.Domain.dll

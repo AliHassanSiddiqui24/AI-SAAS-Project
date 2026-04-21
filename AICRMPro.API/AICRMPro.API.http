@@ -1,0 +1,6 @@
+@AICRMPro.API_HostAddress = http://localhost:5034
+
+GET {{AICRMPro.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

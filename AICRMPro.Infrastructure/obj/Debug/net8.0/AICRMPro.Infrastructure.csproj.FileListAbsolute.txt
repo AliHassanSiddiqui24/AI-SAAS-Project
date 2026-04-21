@@ -1,0 +1,15 @@
+C:\Users\User\Desktop\AI SAAS Project\AICRMPro.Infrastructure\bin\Debug\net8.0\AICRMPro.Infrastructure.deps.json
+C:\Users\User\Desktop\AI SAAS Project\AICRMPro.Infrastructure\bin\Debug\net8.0\AICRMPro.Infrastructure.dll
+C:\Users\User\Desktop\AI SAAS Project\AICRMPro.Infrastructure\bin\Debug\net8.0\AICRMPro.Infrastructure.pdb
+C:\Users\User\Desktop\AI SAAS Project\AICRMPro.Infrastructure\bin\Debug\net8.0\AICRMPro.Domain.dll
+C:\Users\User\Desktop\AI SAAS Project\AICRMPro.Infrastructure\bin\Debug\net8.0\AICRMPro.Domain.pdb
+C:\Users\User\Desktop\AI SAAS Project\AICRMPro.Infrastructure\obj\Debug\net8.0\AICRMPro.Infrastructure.csproj.AssemblyReference.cache
+C:\Users\User\Desktop\AI SAAS Project\AICRMPro.Infrastructure\obj\Debug\net8.0\AICRMPro.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\User\Desktop\AI SAAS Project\AICRMPro.Infrastructure\obj\Debug\net8.0\AICRMPro.Infrastructure.AssemblyInfoInputs.cache
+C:\Users\User\Desktop\AI SAAS Project\AICRMPro.Infrastructure\obj\Debug\net8.0\AICRMPro.Infrastructure.AssemblyInfo.cs
+C:\Users\User\Desktop\AI SAAS Project\AICRMPro.Infrastructure\obj\Debug\net8.0\AICRMPro.Infrastructure.csproj.CoreCompileInputs.cache
+C:\Users\User\Desktop\AI SAAS Project\AICRMPro.Infrastructure\obj\Debug\net8.0\AICRMPro.51689934.Up2Date
+C:\Users\User\Desktop\AI SAAS Project\AICRMPro.Infrastructure\obj\Debug\net8.0\AICRMPro.Infrastructure.dll
+C:\Users\User\Desktop\AI SAAS Project\AICRMPro.Infrastructure\obj\Debug\net8.0\refint\AICRMPro.Infrastructure.dll
+C:\Users\User\Desktop\AI SAAS Project\AICRMPro.Infrastructure\obj\Debug\net8.0\AICRMPro.Infrastructure.pdb
+C:\Users\User\Desktop\AI SAAS Project\AICRMPro.Infrastructure\obj\Debug\net8.0\ref\AICRMPro.Infrastructure.dll
