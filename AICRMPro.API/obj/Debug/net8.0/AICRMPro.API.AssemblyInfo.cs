@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AICRMPro.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1c5aa640e01fce268b258af97c346ce9d923f947")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d0a7fb044abe0eeb8692af1b26dc557cd1318c4c")]
 [assembly: System.Reflection.AssemblyProductAttribute("AICRMPro.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AICRMPro.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

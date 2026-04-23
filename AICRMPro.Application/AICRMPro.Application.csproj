@@ -2,6 +2,15 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AICRMPro.Domain\AICRMPro.Domain.csproj" />
+    <ProjectReference Include="..\AICRMPro.Infrastructure\AICRMPro.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Next" Version="4.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.11" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.7" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.17.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.17.0" />
   </ItemGroup>
 
   <PropertyGroup>
