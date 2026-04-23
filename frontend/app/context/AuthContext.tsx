@@ -26,9 +26,8 @@ interface AuthContextType {
 interface RegisterData {
   email: string;
   password: string;
-  firstName: string;
-  lastName: string;
-  tenantName?: string;
+  name: string;
+  companyName?: string;
 }
 
 // Create context
@@ -45,8 +44,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Update global access token for axios interceptors
   const updateGlobalAccessToken = (token: string | null) => {
     accessToken = token;
+    console.log('AuthContext - Updating token:', !!token);
     if (typeof window !== 'undefined') {
       (window as any).__ACCESS_TOKEN__ = token;
+      console.log('AuthContext - Token stored in window');
     }
   };
 
@@ -57,8 +58,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const initializeAuth = async () => {
     try {
-      // Try to refresh token on app load
-      await refreshToken();
+      // Only try to refresh if we have evidence of an existing session
+      // Check if we have any auth-related cookies or tokens
+      const hasAuthCookie = typeof window !== 'undefined' && 
+                          (document.cookie.includes('refreshToken') || 
+                           document.cookie.includes('access_token'));
+      
+      if (hasAuthCookie) {
+        await refreshToken();
+      } else {
+        setUser(null);
+      }
     } catch (error) {
       // No valid session, continue with user as null
       setUser(null);
@@ -81,6 +91,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       setUser(userData);
       updateGlobalAccessToken(token);
+      
+      return response.data;
     } catch (error) {
       setUser(null);
       updateGlobalAccessToken(null);
@@ -101,6 +113,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       setUser(newUser);
       updateGlobalAccessToken(token);
+      
+      return response.data;
     } catch (error) {
       setUser(null);
       updateGlobalAccessToken(null);
@@ -140,6 +154,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       setUser(userData);
       updateGlobalAccessToken(token);
+      
+      return response.data;
     } catch (error) {
       setUser(null);
       updateGlobalAccessToken(null);

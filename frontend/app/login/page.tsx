@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Loader2, Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import Link from 'next/link';
+import { NoSSR } from '../components/NoSSR';
 
 // Validation schema
 const loginSchema = z.object({
@@ -19,7 +20,6 @@ const loginSchema = z.object({
     .string()
     .min(1, 'Password is required')
     .min(6, 'Password must be at least 6 characters'),
-  rememberMe: z.boolean(),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -42,7 +42,6 @@ export default function Login() {
     defaultValues: {
       email: '',
       password: '',
-      rememberMe: false,
     },
   });
 
@@ -75,7 +74,8 @@ export default function Login() {
         </div>
 
         {/* Login Form */}
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
+        <NoSSR>
+          <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
           {/* Auth Error */}
           {authError && (
             <div className="bg-red-900/50 border border-red-500 rounded-md p-4">
@@ -150,20 +150,8 @@ export default function Login() {
             </div>
           </div>
 
-          {/* Remember Me & Forgot Password */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember-me"
-                type="checkbox"
-                {...register('rememberMe')}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-600 rounded bg-gray-800"
-              />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-300">
-                Remember me
-              </label>
-            </div>
-
+          {/* Forgot Password */}
+          <div className="flex justify-end">
             <div className="text-sm">
               <a href="#" className="font-medium text-blue-400 hover:text-blue-300">
                 Forgot your password?
@@ -199,6 +187,7 @@ export default function Login() {
             </p>
           </div>
         </form>
+          </NoSSR>
       </div>
     </div>
   );

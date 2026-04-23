@@ -7,6 +7,7 @@ const axiosInstance: AxiosInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // Important for cookies
 });
 
 // Request interceptor: Add JWT token to outgoing requests
@@ -15,8 +16,14 @@ axiosInstance.interceptors.request.use(
     // Get access token from memory (will be managed by AuthContext)
     const accessToken = getAccessToken();
     
+    console.log('Request interceptor - Token available:', !!accessToken);
+    console.log('Request interceptor - URL:', config.url);
+    
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
+      console.log('Request interceptor - Authorization header added');
+    } else {
+      console.log('Request interceptor - No token available');
     }
     
     return config;
@@ -62,8 +69,11 @@ axiosInstance.interceptors.response.use(
 // Helper functions (imported from AuthContext)
 function getAccessToken(): string | null {
   if (typeof window !== 'undefined') {
-    return (window as any).__ACCESS_TOKEN__ || null;
+    const token = (window as any).__ACCESS_TOKEN__ || null;
+    console.log('getAccessToken - Retrieved token:', !!token);
+    return token;
   }
+  console.log('getAccessToken - Window not available');
   return null;
 }
 

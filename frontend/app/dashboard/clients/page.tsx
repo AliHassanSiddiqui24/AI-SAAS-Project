@@ -1,18 +1,17 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from '../../../lib/axios';
 import { Search, Plus, Filter, ChevronLeft, ChevronRight, Eye, Edit, Trash2 } from 'lucide-react';
 
 interface Client {
   id: string;
-  firstName: string;
-  lastName: string;
+  name: string;
   email: string;
-  phone?: string;
-  company?: string;
-  status: 'lead' | 'prospect' | 'active' | 'churned';
+  phone: string;
+  company: string;
+  status: 'Hot' | 'Warm' | 'Cold';
   leadScore: number;
   createdAt: string;
   updatedAt: string;
@@ -38,17 +37,20 @@ const fetchClients = async (page: number, pageSize: number, search?: string, sta
   return response.data;
 };
 
+const createClient = async (clientData: any) => {
+  const response = await axios.post('/clients', { dto: clientData });
+  return response.data;
+};
+
 const StatusBadge = ({ status }: { status: string }) => {
   const getStatusStyles = (status: string) => {
     switch (status) {
-      case 'lead':
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
-      case 'prospect':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
-      case 'active':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
-      case 'churned':
+      case 'Hot':
         return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
+      case 'Warm':
+        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
+      case 'Cold':
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
       default:
         return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
     }
@@ -56,7 +58,7 @@ const StatusBadge = ({ status }: { status: string }) => {
 
   return (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusStyles(status)}`}>
-      {status.charAt(0).toUpperCase() + status.slice(1)}
+      {status}
     </span>
   );
 };
@@ -101,8 +103,39 @@ export default function ClientsPage() {
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    company: '',
+    status: 'Warm' as 'Hot' | 'Warm' | 'Cold',
+    leadScore: 50,
+    notes: ''
+  });
   
   const pageSize = 20;
+  const queryClient = useQueryClient();
+
+  const createClientMutation = useMutation({
+    mutationFn: createClient,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['clients'] });
+      setIsAddModalOpen(false);
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        company: '',
+        status: 'Warm',
+        leadScore: 50,
+        notes: ''
+      });
+    },
+    onError: (error: any) => {
+      console.error('Error creating client:', error);
+      alert('Failed to create client. Please try again.');
+    }
+  });
 
   // Debounce search input
   useEffect(() => {
@@ -113,6 +146,19 @@ export default function ClientsPage() {
 
     return () => clearTimeout(timer);
   }, [search]);
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    createClientMutation.mutate(formData);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: name === 'leadScore' ? parseInt(value) || 0 : value
+    }));
+  };
 
   const { data: clientsData, isLoading, error } = useQuery({
     queryKey: ['clients', page, pageSize, debouncedSearch, statusFilter],
@@ -179,10 +225,9 @@ export default function ClientsPage() {
                 className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">All Status</option>
-                <option value="lead">Lead</option>
-                <option value="prospect">Prospect</option>
-                <option value="active">Active</option>
-                <option value="churned">Churned</option>
+                <option value="Hot">Hot</option>
+                <option value="Warm">Warm</option>
+                <option value="Cold">Cold</option>
               </select>
             </div>
           </div>
@@ -230,7 +275,7 @@ export default function ClientsPage() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div>
                           <div className="text-sm font-medium text-white">
-                            {client.firstName} {client.lastName}
+                            {client.name}
                           </div>
                           <div className="text-sm text-gray-400">{client.email}</div>
                         </div>
@@ -300,23 +345,16 @@ export default function ClientsPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-gray-800 rounded-lg p-6 w-full max-w-md border border-gray-700">
             <h2 className="text-xl font-semibold text-white mb-4">Add New Client</h2>
-            <form className="space-y-4">
+            <form onSubmit={handleFormSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1">
-                  First Name
+                  Name
                 </label>
                 <input
                   type="text"
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
-                  Last Name
-                </label>
-                <input
-                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
                   className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   required
                 />
@@ -327,8 +365,23 @@ export default function ClientsPage() {
                 </label>
                 <input
                   type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
                   className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Phone
+                </label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
               <div>
@@ -337,6 +390,9 @@ export default function ClientsPage() {
                 </label>
                 <input
                   type="text"
+                  name="company"
+                  value={formData.company}
+                  onChange={handleInputChange}
                   className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
@@ -345,20 +401,49 @@ export default function ClientsPage() {
                   Status
                 </label>
                 <select
+                  name="status"
+                  value={formData.status}
+                  onChange={handleInputChange}
                   className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  <option value="lead">Lead</option>
-                  <option value="prospect">Prospect</option>
-                  <option value="active">Active</option>
-                  <option value="churned">Churned</option>
+                  <option value="Hot">Hot</option>
+                  <option value="Warm">Warm</option>
+                  <option value="Cold">Cold</option>
                 </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Lead Score
+                </label>
+                <input
+                  type="number"
+                  name="leadScore"
+                  value={formData.leadScore}
+                  onChange={handleInputChange}
+                  min="0"
+                  max="100"
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Notes
+                </label>
+                <textarea
+                  name="notes"
+                  value={formData.notes}
+                  onChange={handleInputChange}
+                  rows={3}
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
               </div>
               <div className="flex space-x-3 pt-4">
                 <button
                   type="submit"
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+                  disabled={createClientMutation.isPending}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Add Client
+                  {createClientMutation.isPending ? 'Adding...' : 'Add Client'}
                 </button>
                 <button
                   type="button"

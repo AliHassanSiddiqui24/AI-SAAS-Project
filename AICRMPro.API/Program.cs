@@ -24,7 +24,7 @@ builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
-        Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+        Description = "JWT Authorization header using Bearer scheme. Example: \"Authorization: Bearer {token}\"",
         Name = "Authorization",
         In = Microsoft.OpenApi.Models.ParameterLocation.Header,
         Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
@@ -52,7 +52,6 @@ builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSet
 
 // Configure JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
-// Program.cs mein is section ko update karein
 var key = Encoding.UTF8.GetBytes(jwtSettings?.SecretKey ?? string.Empty);
 
 builder.Services.AddAuthentication(options =>
@@ -146,6 +145,15 @@ if (app.Environment.IsDevelopment())
 
 // Add authentication middleware
 app.UseAuthentication();
+
+// Add CORS middleware
+app.UseCors(options =>
+{
+    options.WithOrigins("http://localhost:3000", "http://localhost:3001")
+           .AllowAnyMethod()
+           .AllowAnyHeader()
+           .AllowCredentials();
+});
 
 // Add tenant resolution middleware (must be after authentication)
 app.UseMiddleware<TenantResolutionMiddleware>();

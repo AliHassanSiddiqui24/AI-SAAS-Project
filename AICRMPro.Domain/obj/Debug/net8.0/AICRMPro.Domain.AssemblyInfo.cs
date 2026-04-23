@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AICRMPro.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9eee3dfe535a172e43f9c40b6fc53d677e9583a3")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4ea6f6c80e9522533b3d87893922f7ce43124672")]
 [assembly: System.Reflection.AssemblyProductAttribute("AICRMPro.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AICRMPro.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

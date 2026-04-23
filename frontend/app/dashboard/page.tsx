@@ -2,6 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import axios from '../../lib/axios';
+import { useAuth } from '../context/AuthContext';
 import { Users, TrendingUp, DollarSign, Trophy } from 'lucide-react';
 
 interface DashboardStats {
@@ -12,13 +13,14 @@ interface DashboardStats {
 }
 
 const fetchDashboardStats = async (): Promise<DashboardStats> => {
-  const [clientsResponse, dealsResponse] = await Promise.all([
-    axios.get('/clients'),
-    axios.get('/deals')
-  ]);
+  try {
+    const [clientsResponse, dealsResponse] = await Promise.all([
+      axios.get('/clients'),
+      axios.get('/deals')
+    ]);
 
-  const clients = clientsResponse.data;
-  const deals = dealsResponse.data;
+    const clients = clientsResponse.data?.data || clientsResponse.data || [];
+    const deals = dealsResponse.data?.data || dealsResponse.data || [];
 
   const totalClients = clients.length;
   const activeDeals = deals.filter((deal: any) => deal.status !== 'won' && deal.status !== 'lost').length;
@@ -43,6 +45,16 @@ const fetchDashboardStats = async (): Promise<DashboardStats> => {
     pipelineValue,
     dealsWonThisMonth
   };
+  } catch (error) {
+    console.error('Dashboard data fetch error:', error);
+    // Return default values on error
+    return {
+      totalClients: 0,
+      activeDeals: 0,
+      pipelineValue: 0,
+      dealsWonThisMonth: 0
+    };
+  }
 };
 
 const StatCard = ({ 
@@ -63,13 +75,13 @@ const StatCard = ({
       <div className="flex items-center justify-between">
         <div>
           <p className="text-gray-400 text-sm font-medium">{title}</p>
-          <p className="text-2xl font-bold text-white mt-2">
+          <div className="text-2xl font-bold text-white mt-2">
             {isLoading ? (
               <div className="h-8 w-24 bg-gray-700 rounded animate-pulse"></div>
             ) : (
               value
             )}
-          </p>
+          </div>
           {trend && !isLoading && (
             <p className="text-green-400 text-sm mt-1">{trend}</p>
           )}
@@ -83,19 +95,49 @@ const StatCard = ({
 };
 
 export default function Dashboard() {
+  const { user, isLoading: authLoading } = useAuth();
+  
   const { data: stats, isLoading, error } = useQuery({
     queryKey: ['dashboard-stats'],
     queryFn: fetchDashboardStats,
     staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled: !!user, // Only run query when user is authenticated
   });
 
+  // Show loading state while auth is initializing
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-900 p-8">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-3xl font-bold text-white mb-8">Dashboard</h1>
+          <div className="text-gray-400">Loading authentication...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error if not authenticated
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-900 p-8">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-3xl font-bold text-white mb-8">Dashboard</h1>
+          <div className="bg-yellow-900 border border-yellow-700 text-yellow-200 px-4 py-3 rounded">
+            Please log in to access the dashboard.
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (error) {
+    console.error('Dashboard query error:', error);
     return (
       <div className="min-h-screen bg-gray-900 p-8">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-3xl font-bold text-white mb-8">Dashboard</h1>
           <div className="bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded">
-            Error loading dashboard data. Please try again later.
+            Error loading dashboard data: {error.message || 'Please try again later.'}
           </div>
         </div>
       </div>
