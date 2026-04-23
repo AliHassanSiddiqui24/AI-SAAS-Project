@@ -24,31 +24,34 @@ public class TokenService : ITokenService
     }
 
     public string GenerateAccessToken(Guid userId, Guid tenantId, string role)
+{
+    var tokenHandler = new JwtSecurityTokenHandler();
+    // ASCII ki jagah UTF8 use karein safe key handling ke liye
+    var key = Encoding.UTF8.GetBytes(_jwtSettings.SecretKey);
+    
+    var claims = new List<Claim>
     {
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.ASCII.GetBytes(_jwtSettings.SecretKey);
-        
-        var claims = new[]
-        {
-            new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
-            new Claim("tenantId", tenantId.ToString()),
-            new Claim(ClaimTypes.Role, role),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
-        };
+        new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
+        new Claim(JwtRegisteredClaimNames.UniqueName, userId.ToString()),
+        new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
+        // Claim name ko standard rakhein ya middleware se match karein
+        new Claim("tenantId", tenantId.ToString()), 
+        new Claim(ClaimTypes.Role, role),
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+    };
 
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
-            Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddMinutes(_jwtSettings.AccessTokenExpirationMinutes),
-            Issuer = _jwtSettings.Issuer,
-            Audience = _jwtSettings.Audience,
-            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-        };
+    var tokenDescriptor = new SecurityTokenDescriptor
+    {
+        Subject = new ClaimsIdentity(claims),
+        Expires = DateTime.UtcNow.AddMinutes(_jwtSettings.AccessTokenExpirationMinutes),
+        Issuer = _jwtSettings.Issuer,
+        Audience = _jwtSettings.Audience,
+        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+    };
 
-        var token = tokenHandler.CreateToken(tokenDescriptor);
-        return tokenHandler.WriteToken(token);
-    }
+    var token = tokenHandler.CreateToken(tokenDescriptor);
+    return tokenHandler.WriteToken(token);
+}
 
     public string GenerateRefreshToken()
     {
@@ -60,7 +63,7 @@ public class TokenService : ITokenService
         try
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_jwtSettings.SecretKey);
+            var key = Encoding.UTF8.GetBytes(_jwtSettings.SecretKey);
             
             var validationParameters = new TokenValidationParameters
             {
@@ -71,7 +74,9 @@ public class TokenService : ITokenService
                 ValidateAudience = true,
                 ValidAudience = _jwtSettings.Audience,
                 ValidateLifetime = true,
-                ClockSkew = TimeSpan.Zero
+                ClockSkew = TimeSpan.Zero,
+                NameClaimType = ClaimTypes.NameIdentifier,
+                RoleClaimType = ClaimTypes.Role
             };
 
             var principal = tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);

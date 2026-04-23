@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AICRMPro.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d0a7fb044abe0eeb8692af1b26dc557cd1318c4c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9eee3dfe535a172e43f9c40b6fc53d677e9583a3")]
 [assembly: System.Reflection.AssemblyProductAttribute("AICRMPro.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AICRMPro.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -4,9 +4,12 @@ using AICRMPro.Infrastructure.Services;
 using AICRMPro.Application.Services;
 using AICRMPro.Application.Settings;
 using AICRMPro.API.Middleware;
+using AICRMPro.Application.Validators;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +17,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
+// Add FluentValidation
+builder.Services.AddValidatorsFromAssemblyContaining<CreateClientValidator>();
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
@@ -46,7 +52,8 @@ builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSet
 
 // Configure JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
-var key = Encoding.ASCII.GetBytes(jwtSettings?.SecretKey ?? string.Empty);
+// Program.cs mein is section ko update karein
+var key = Encoding.UTF8.GetBytes(jwtSettings?.SecretKey ?? string.Empty);
 
 builder.Services.AddAuthentication(options =>
 {
@@ -66,7 +73,30 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidAudience = jwtSettings?.Audience,
         ValidateLifetime = true,
-        ClockSkew = TimeSpan.Zero
+        ClockSkew = TimeSpan.Zero,
+        NameClaimType = ClaimTypes.NameIdentifier,
+        RoleClaimType = ClaimTypes.Role
+    };
+    
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            Console.WriteLine($"[JWT] Token received: {token?.Substring(0, Math.Min(50, token?.Length ?? 0))}...");
+            return Task.CompletedTask;
+        },
+        OnTokenValidated = context =>
+        {
+            Console.WriteLine($"[JWT] Token validated successfully for user: {context.Principal?.Identity?.Name}");
+            Console.WriteLine($"[JWT] Claims: {string.Join(", ", context.Principal?.Claims.Select(c => $"{c.Type}:{c.Value}") ?? Array.Empty<string>())}");
+            return Task.CompletedTask;
+        },
+        OnAuthenticationFailed = context =>
+        {
+            Console.WriteLine($"[JWT] Authentication failed: {context.Exception.Message}");
+            return Task.CompletedTask;
+        }
     };
 });
 
@@ -79,6 +109,8 @@ builder.Services.AddScoped<ICurrentTenant, CurrentTenant>();
 // Register application services
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IClientService, ClientService>();
+builder.Services.AddScoped<IDealService, DealService>();
 
 var app = builder.Build();
 
@@ -110,7 +142,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 
 // Add authentication middleware
 app.UseAuthentication();

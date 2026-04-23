@@ -21,6 +21,19 @@
           "build/netstandard1.0/coverlet.collector.targets": {}
         }
       },
+      "FluentValidation/12.1.1": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/FluentValidation.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/FluentValidation.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.CodeCoverage/17.8.0": {
         "type": "package",
         "compile": {
@@ -2279,6 +2292,7 @@
           "AICRMPro.Domain": "1.0.0",
           "AICRMPro.Infrastructure": "1.0.0",
           "BCrypt.Net-Next": "4.1.0",
+          "FluentValidation": "12.1.1",
           "Microsoft.EntityFrameworkCore": "8.0.11",
           "Microsoft.Extensions.Options": "10.0.7",
           "Microsoft.IdentityModel.Tokens": "8.17.0",
@@ -2400,6 +2414,21 @@
         "coverlet-icon.png",
         "coverlet.collector.6.0.0.nupkg.sha512",
         "coverlet.collector.nuspec"
+      ]
+    },
+    "FluentValidation/12.1.1": {
+      "sha512": "EPpkIe1yh1a0OXyC100oOA8WMbZvqUu5plwhvYcb7oSELfyUZzfxV48BLhvs3kKo4NwG7MGLNgy1RJiYtT8Dpw==",
+      "type": "package",
+      "path": "fluentvalidation/12.1.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "fluent-validation-icon.png",
+        "fluentvalidation.12.1.1.nupkg.sha512",
+        "fluentvalidation.nuspec",
+        "lib/net8.0/FluentValidation.dll",
+        "lib/net8.0/FluentValidation.xml"
       ]
     },
     "Microsoft.CodeCoverage/17.8.0": {

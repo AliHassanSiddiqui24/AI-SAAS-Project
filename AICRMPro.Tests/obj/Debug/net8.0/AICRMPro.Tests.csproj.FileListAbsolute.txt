@@ -151,3 +151,4 @@ C:\Users\User\Desktop\AI SAAS Project\AICRMPro.Tests\obj\Debug\net8.0\refint\AIC
 C:\Users\User\Desktop\AI SAAS Project\AICRMPro.Tests\obj\Debug\net8.0\AICRMPro.Tests.pdb
 C:\Users\User\Desktop\AI SAAS Project\AICRMPro.Tests\obj\Debug\net8.0\AICRMPro.Tests.genruntimeconfig.cache
 C:\Users\User\Desktop\AI SAAS Project\AICRMPro.Tests\obj\Debug\net8.0\ref\AICRMPro.Tests.dll
+C:\Users\User\Desktop\AI SAAS Project\AICRMPro.Tests\bin\Debug\net8.0\FluentValidation.dll

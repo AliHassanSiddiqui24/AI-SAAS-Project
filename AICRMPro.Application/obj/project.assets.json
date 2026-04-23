@@ -15,6 +15,19 @@
           }
         }
       },
+      "FluentValidation/12.1.1": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/FluentValidation.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/FluentValidation.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.Data.Sqlite.Core/8.0.11": {
         "type": "package",
         "dependencies": {
@@ -621,6 +634,21 @@
         "lib/netstandard2.1/BCrypt.Net-Next.dll",
         "lib/netstandard2.1/BCrypt.Net-Next.xml",
         "readme.md"
+      ]
+    },
+    "FluentValidation/12.1.1": {
+      "sha512": "EPpkIe1yh1a0OXyC100oOA8WMbZvqUu5plwhvYcb7oSELfyUZzfxV48BLhvs3kKo4NwG7MGLNgy1RJiYtT8Dpw==",
+      "type": "package",
+      "path": "fluentvalidation/12.1.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "fluent-validation-icon.png",
+        "fluentvalidation.12.1.1.nupkg.sha512",
+        "fluentvalidation.nuspec",
+        "lib/net8.0/FluentValidation.dll",
+        "lib/net8.0/FluentValidation.xml"
       ]
     },
     "Microsoft.Data.Sqlite.Core/8.0.11": {
@@ -1389,6 +1417,7 @@
       "AICRMPro.Domain >= 1.0.0",
       "AICRMPro.Infrastructure >= 1.0.0",
       "BCrypt.Net-Next >= 4.1.0",
+      "FluentValidation >= 12.1.1",
       "Microsoft.EntityFrameworkCore >= 8.0.11",
       "Microsoft.Extensions.Options >= 10.0.7",
       "Microsoft.IdentityModel.Tokens >= 8.17.0",
@@ -1455,6 +1484,10 @@
           "BCrypt.Net-Next": {
             "target": "Package",
             "version": "[4.1.0, )"
+          },
+          "FluentValidation": {
+            "target": "Package",
+            "version": "[12.1.1, )"
           },
           "Microsoft.EntityFrameworkCore": {
             "target": "Package",
