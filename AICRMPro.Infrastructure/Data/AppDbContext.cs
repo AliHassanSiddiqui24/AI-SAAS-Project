@@ -18,6 +18,11 @@ public class AppDbContext : DbContext
     public DbSet<RefreshToken> RefreshTokens { get; set; }
     public DbSet<Client> Clients { get; set; }
     public DbSet<Deal> Deals { get; set; }
+    public DbSet<Activity> Activities { get; set; }
+    public DbSet<AIRequest> AIRequests { get; set; }
+    public DbSet<AIUsageLimit> AIUsageLimits { get; set; }
+    public DbSet<Notification> Notifications { get; set; }
+    public DbSet<AuditLog> AuditLogs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -82,6 +87,72 @@ public class AppDbContext : DbContext
             entity.HasOne(e => e.Client).WithMany(c => c.Deals).HasForeignKey(e => e.ClientId);
         });
 
+        // Configure Activity entity
+        modelBuilder.Entity<Activity>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Title).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.Description).HasColumnType("text");
+            entity.Property(e => e.Outcome).HasColumnType("text");
+            entity.Property(e => e.Type).HasConversion<string>();
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entity.HasOne(e => e.Tenant).WithMany().HasForeignKey(e => e.TenantId);
+            entity.HasOne(e => e.Client).WithMany().HasForeignKey(e => e.ClientId);
+            entity.HasOne(e => e.Deal).WithMany().HasForeignKey(e => e.DealId);
+            entity.HasOne(e => e.User).WithMany().HasForeignKey(e => e.UserId);
+        });
+
+        // Configure AIRequest entity
+        modelBuilder.Entity<AIRequest>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Model).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.CostUSD).HasColumnType("decimal(10,6)");
+            entity.Property(e => e.ErrorMessage).HasColumnType("text");
+            entity.Property(e => e.Feature).HasConversion<string>();
+            entity.Property(e => e.Provider).HasConversion<string>();
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entity.HasOne(e => e.Tenant).WithMany().HasForeignKey(e => e.TenantId);
+            entity.HasOne(e => e.User).WithMany().HasForeignKey(e => e.UserId);
+        });
+
+        // Configure AIUsageLimit entity
+        modelBuilder.Entity<AIUsageLimit>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.CostUSD).HasColumnType("decimal(10,6)");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entity.HasOne(e => e.Tenant).WithMany().HasForeignKey(e => e.TenantId);
+            entity.HasIndex(e => new { e.TenantId, e.Date }).IsUnique();
+        });
+
+        // Configure Notification entity
+        modelBuilder.Entity<Notification>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Title).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.Message).IsRequired().HasColumnType("text");
+            entity.Property(e => e.RelatedEntityType).HasMaxLength(50);
+            entity.Property(e => e.Type).HasConversion<string>();
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entity.HasOne(e => e.Tenant).WithMany().HasForeignKey(e => e.TenantId);
+            entity.HasOne(e => e.User).WithMany().HasForeignKey(e => e.UserId);
+        });
+
+        // Configure AuditLog entity
+        modelBuilder.Entity<AuditLog>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Action).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.EntityType).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.OldValues).HasColumnType("text");
+            entity.Property(e => e.NewValues).HasColumnType("text");
+            entity.Property(e => e.IPAddress).HasMaxLength(45);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entity.HasOne(e => e.Tenant).WithMany().HasForeignKey(e => e.TenantId);
+            entity.HasOne(e => e.User).WithMany().HasForeignKey(e => e.UserId);
+        });
+
         // Apply global query filter for multi-tenancy
         // This filter will automatically filter all queries by the current tenant
         // Note: We don't apply this to Tenants table as it's used for tenant resolution
@@ -89,6 +160,11 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<RefreshToken>().HasQueryFilter(e => _currentTenant.TenantId == null || e.User.TenantId == _currentTenant.TenantId);
         modelBuilder.Entity<Client>().HasQueryFilter(e => _currentTenant.TenantId == null || e.TenantId == _currentTenant.TenantId);
         modelBuilder.Entity<Deal>().HasQueryFilter(e => _currentTenant.TenantId == null || e.TenantId == _currentTenant.TenantId);
+        modelBuilder.Entity<Activity>().HasQueryFilter(e => _currentTenant.TenantId == null || e.TenantId == _currentTenant.TenantId);
+        modelBuilder.Entity<AIRequest>().HasQueryFilter(e => _currentTenant.TenantId == null || e.TenantId == _currentTenant.TenantId);
+        modelBuilder.Entity<AIUsageLimit>().HasQueryFilter(e => _currentTenant.TenantId == null || e.TenantId == _currentTenant.TenantId);
+        modelBuilder.Entity<Notification>().HasQueryFilter(e => _currentTenant.TenantId == null || e.TenantId == _currentTenant.TenantId);
+        modelBuilder.Entity<AuditLog>().HasQueryFilter(e => _currentTenant.TenantId == null || e.TenantId == _currentTenant.TenantId);
     }
 
     public override int SaveChanges()

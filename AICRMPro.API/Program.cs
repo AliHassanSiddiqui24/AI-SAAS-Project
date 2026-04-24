@@ -5,10 +5,12 @@ using AICRMPro.Application.Services;
 using AICRMPro.Application.Settings;
 using AICRMPro.API.Middleware;
 using AICRMPro.Application.Validators;
+using AICRMPro.Infrastructure.AI;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using StackExchange.Redis;
 using System.Security.Claims;
 using System.Text;
 
@@ -104,6 +106,19 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 // Register current tenant service
 builder.Services.AddScoped<ICurrentTenant, CurrentTenant>();
+
+// Register Redis connection
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+    ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis") ?? "localhost:6379"));
+
+// Register HttpClient for AI providers
+builder.Services.AddHttpClient<GroqProvider>();
+builder.Services.AddHttpClient<OpenAIProvider>();
+
+// Register AI infrastructure services
+builder.Services.AddScoped<IAIProvider, GroqProvider>();
+builder.Services.AddScoped<AIRouter>();
+builder.Services.AddScoped<UsageLimitService>();
 
 // Register application services
 builder.Services.AddScoped<ITokenService, TokenService>();
