@@ -11,17 +11,20 @@ interface Client {
   email: string;
   phone: string;
   company: string;
-  status: 'Hot' | 'Warm' | 'Cold';
+  status: number; // Backend sends enum as integer
   leadScore: number;
   createdAt: string;
   updatedAt: string;
 }
 
 interface ClientsResponse {
-  clients: Client[];
-  total: number;
-  page: number;
-  pageSize: number;
+  success: boolean;
+  data: Client[];
+  pagination: {
+    page: number;
+    pageSize: number;
+    totalCount: number;
+  };
 }
 
 const fetchClients = async (page: number, pageSize: number, search?: string, status?: string): Promise<ClientsResponse> => {
@@ -38,11 +41,31 @@ const fetchClients = async (page: number, pageSize: number, search?: string, sta
 };
 
 const createClient = async (clientData: any) => {
-  const response = await axios.post('/clients', { dto: clientData });
+  // Map status string to enum value
+  const statusMap: { [key: string]: number } = {
+    'Hot': 0,
+    'Warm': 1, 
+    'Cold': 2
+  };
+  
+  const mappedData = {
+    ...clientData,
+    status: statusMap[clientData.status] || 1 // Default to Warm (1) if invalid
+  };
+  
+  const response = await axios.post('/clients', mappedData);
   return response.data;
 };
 
-const StatusBadge = ({ status }: { status: string }) => {
+const StatusBadge = ({ status }: { status: number }) => {
+  const statusMap: { [key: number]: string } = {
+    0: 'Hot',
+    1: 'Warm',
+    2: 'Cold'
+  };
+  
+  const statusString = statusMap[status] || 'Warm';
+  
   const getStatusStyles = (status: string) => {
     switch (status) {
       case 'Hot':
@@ -57,8 +80,8 @@ const StatusBadge = ({ status }: { status: string }) => {
   };
 
   return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusStyles(status)}`}>
-      {status}
+    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusStyles(statusString)}`}>
+      {statusString}
     </span>
   );
 };
@@ -167,7 +190,7 @@ export default function ClientsPage() {
   });
 
   const totalPages = useMemo(() => {
-    return clientsData ? Math.ceil(clientsData.total / pageSize) : 1;
+    return clientsData ? Math.ceil(clientsData.pagination.totalCount / pageSize) : 1;
   }, [clientsData, pageSize]);
 
   if (error) {
@@ -263,14 +286,14 @@ export default function ClientsPage() {
                       <TableSkeleton />
                     </td>
                   </tr>
-                ) : clientsData?.clients?.length === 0 ? (
+                ) : clientsData?.data?.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="px-6 py-8 text-center text-gray-400">
                       No clients found
                     </td>
                   </tr>
                 ) : (
-                  clientsData?.clients?.map((client) => (
+                  clientsData?.data?.map((client: Client) => (
                     <tr key={client.id} className="hover:bg-gray-700 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div>
@@ -310,11 +333,11 @@ export default function ClientsPage() {
           </div>
 
           {/* Pagination */}
-          {!isLoading && clientsData && clientsData.total > pageSize && (
+          {!isLoading && clientsData && clientsData.pagination.totalCount > pageSize && (
             <div className="bg-gray-700 px-6 py-3 flex items-center justify-between border-t border-gray-600">
               <div className="text-sm text-gray-300">
-                Showing {((page - 1) * pageSize) + 1} to {Math.min(page * pageSize, clientsData.total)} of{' '}
-                {clientsData.total} results
+                Showing {((page - 1) * pageSize) + 1} to {Math.min(page * pageSize, clientsData.pagination.totalCount)} of{' '}
+                {clientsData.pagination.totalCount} results
               </div>
               <div className="flex items-center space-x-2">
                 <button

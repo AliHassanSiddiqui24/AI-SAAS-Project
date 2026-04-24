@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'ax
 
 // Create axios instance with base configuration
 const axiosInstance: AxiosInstance = axios.create({
-  baseURL: 'http://localhost:5035/api/v1',
+  baseURL: 'http://localhost:5036/api/v1',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -86,7 +86,7 @@ function setAccessToken(token: string): void {
 async function refreshAccessToken(): Promise<string | null> {
   try {
     // Get refresh token from httpOnly cookie
-    const response = await axios.post('http://localhost:5035/api/v1/auth/refresh', {}, {
+    const response = await axios.post('http://localhost:5036/api/v1/auth/refresh', {}, {
       withCredentials: true, // Important for httpOnly cookies
     });
     

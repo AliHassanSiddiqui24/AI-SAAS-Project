@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Auth Test</title>
+</head>
+<body>
+    <h1>Authentication Test</h1>
+    
+    <h2>Register Test User</h2>
+    <button onclick="registerUser()">Register Test User</button>
+    <div id="registerResult"></div>
+    
+    <h2>Login Test User</h2>
+    <button onclick="loginUser()">Login Test User</button>
+    <div id="loginResult"></div>
+    
+    <h2>Check Cookies</h2>
+    <button onclick="checkCookies()">Check Current Cookies</button>
+    <div id="cookieResult"></div>
+
+    <script>
+        async function registerUser() {
+            const resultDiv = document.getElementById('registerResult');
+            try {
+                const response = await fetch('http://localhost:5036/api/v1/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        name: 'Test User',
+                        email: 'test@example.com',
+                        password: 'password123',
+                        companyName: 'Test Company'
+                    })
+                });
+                
+                const data = await response.json();
+                resultDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                
+                if (response.ok) {
+                    checkCookies();
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `Error: ${error.message}`;
+            }
+        }
+        
+        async function loginUser() {
+            const resultDiv = document.getElementById('loginResult');
+            try {
+                const response = await fetch('http://localhost:5036/api/v1/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        email: 'test@example.com',
+                        password: 'password123'
+                    })
+                });
+                
+                const data = await response.json();
+                resultDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                
+                if (response.ok) {
+                    checkCookies();
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `Error: ${error.message}`;
+            }
+        }
+        
+        function checkCookies() {
+            const resultDiv = document.getElementById('cookieResult');
+            const cookies = document.cookie;
+            resultDiv.innerHTML = `<pre>Current cookies: ${cookies}</pre>`;
+            
+            // Check for refreshToken specifically
+            const hasRefreshToken = cookies.includes('refreshToken');
+            resultDiv.innerHTML += `<br>Has refreshToken: ${hasRefreshToken}`;
+        }
+    </script>
+</body>
+</html>
